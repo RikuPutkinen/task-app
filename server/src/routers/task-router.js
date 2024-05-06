@@ -1,17 +1,36 @@
 const express = require('express')
 const router = express.Router()
 
-router.get('/', (req, res) => {
-  console.log('GET /api/tasks')
+const Task = require('../db/models/task')
+
+router.get('/', async (req, res) => {
+  const tasks = await Task.find({ parentTask: null }).populate('childTasks')
+  res.json(tasks)
 })
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const { id } = req.params
-  console.log(`GET /api/tasks/${id}`)
+  const task = await Task.findOne({ id: id }).populate('childTasks')
+
+  if (!task) {
+    res.status(404).end()
+  }
+  res.json(task)
 })
 
-router.post('/', (req, res) => {
-  console.log('POST /api/tasks')
+router.post('/', async (req, res) => {
+  const { body } = req
+  const newTask = {
+    title: body.title,
+    description: body.description || '',
+    parentTask: body.parentId || null,
+    priority: body.priority,
+    deadline: body.deadline || null,
+  }
+
+  const task = new Task(newTask)
+  const result = await task.save()
+  res.status(201).json(result)
 })
 
 router.put('/:id', (req, res) => {
