@@ -10,16 +10,25 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   const { id } = req.params
-  const task = await Task.findOne({ id: id }).populate('childTasks')
+  const task = await Task.findOne({ _id: id }).populate('childTasks')
 
   if (!task) {
     res.status(404).end()
+  } else {
+    res.json(task)
   }
-  res.json(task)
 })
 
 router.post('/', async (req, res) => {
   const { body } = req
+
+  if (!body.title) {
+    res.status(400).json({ error: 'Title missing' })
+  }
+  if (!body.priority) {
+    res.status(400).json({ error: 'Priority missing' })
+  }
+
   const newTask = {
     title: body.title,
     description: body.description || '',
