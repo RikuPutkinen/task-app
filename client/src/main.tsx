@@ -11,8 +11,7 @@ import App from './App.tsx'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <CssBaseline>
-      <App />
-    </CssBaseline>
+    <CssBaseline />
+    <App />
   </React.StrictMode>
 )
